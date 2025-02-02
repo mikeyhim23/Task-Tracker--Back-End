@@ -14,9 +14,13 @@ class TaskResource(Resource):
 
     def post(self):
         data = request.get_json()
-        title = data['title']
-        description = data['description']
-        user_id = data['user_id']
+        title = data.get('title')
+        description = data.get('description')
+        user_id = data.get('user_id')
+        
+        # Validate data
+        if not title or not description or not user_id:
+            return {'message': 'Missing required fields'}, 400
         
         new_task = Task(title=title, description=description, user_id=user_id)
         db.session.add(new_task)
@@ -29,9 +33,19 @@ class TaskResource(Resource):
             return {'message': 'Task not found'}, 404
         
         data = request.get_json()
-        task.title = data['title']
-        task.description = data['description']
-        task.status = data['status']
+        title = data.get('title')
+        description = data.get('description')
+        status = data.get('status')
+        user_id = data.get('user_id')
+
+        # Validate data
+        if not title or not description or not status or not user_id:
+            return {'message': 'Missing required fields'}, 400
+        
+        task.title = title
+        task.description = description
+        task.status = status
+        task.user_id = user_id
         db.session.commit()
         return task.serialize(), 200
 

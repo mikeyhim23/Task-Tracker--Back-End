@@ -23,6 +23,19 @@ class UserTaskResource(Resource):
         db.session.commit()
         return new_user_task.serialize(), 201
 
+    def put(self, user_task_id):
+        user_task = UserTask.query.get(user_task_id)
+        if not user_task:
+            return {'message': 'UserTask not found'}, 404
+        
+        data = request.get_json()
+        user_task.user_id = data.get('user_id', user_task.user_id)
+        user_task.project_id = data.get('project_id', user_task.project_id)
+        user_task.role = data.get('role', user_task.role)
+
+        db.session.commit()
+        return user_task.serialize(), 200
+
     def delete(self, user_task_id):
         user_task = UserTask.query.get(user_task_id)
         if user_task:

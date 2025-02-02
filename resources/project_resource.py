@@ -2,7 +2,6 @@ from flask_restful import Resource
 from flask import request
 from models import db, Project
 
-
 class ProjectResource(Resource):
     def get(self, project_id=None):
         if project_id:
@@ -22,6 +21,18 @@ class ProjectResource(Resource):
         db.session.add(new_project)
         db.session.commit()
         return new_project.serialize(), 201
+
+    def put(self, project_id):
+        project = Project.query.get(project_id)
+        if not project:
+            return {'message': 'Project not found'}, 404
+        
+        data = request.get_json()
+        project.name = data.get('name', project.name)
+        project.description = data.get('description', project.description)
+        
+        db.session.commit()
+        return project.serialize(), 200
 
     def delete(self, project_id):
         project = Project.query.get(project_id)
